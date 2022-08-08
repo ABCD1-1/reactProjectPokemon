@@ -1,25 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import axios from "axios";
+import "./styles.css";
 
-function App() {
+const App = () => {
+  useEffect(() => {
+    // Step 1 : "Hello, Heroku ! 👋"
+    axios
+      .get("https://secret-oasis-98631.herokuapp.com")
+      .then((res) => console.log(res.data));
+
+    // Step 2 : "Get JWT token 🔓"
+    axios
+      .post(
+        "https://secret-oasis-98631.herokuapp.com/api/login",
+        { username: "pikachu", password: "pikachu" },
+        { headers: { "Content-Type": "application/json" } }
+      )
+      .then((res) => res.data)
+      .then((res) => {
+        console.log(res);
+        return res.token;
+      })
+      .then((token) => fetchPokemonlist(token));
+  }, []);
+
+  // Step 3 : "Get pokemon list 🎉"
+  const fetchPokemonlist = (token) => {
+    return axios
+      .get("https://secret-oasis-98631.herokuapp.com/api/pokemons", {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then((res) => res.data)
+      .then((res) => console.log(res));
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Hello, Heroku ! 👋</h1>
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1280px-React-icon.svg.png"
+        alt="React Logo"
+        width="300"
+      />
     </div>
   );
-}
+};
 
 export default App;
